@@ -569,6 +569,39 @@ function commandsModule({
      */
     downloadCSVMeasurementsReport: ({ measurementFilter }) => {
       utils.downloadCSVReport(measurementService.getMeasurements(measurementFilter));
+    } /**
+     * Upload the CSV report and the dicom SR report for the measurements.
+     */,
+    uploadCSVMeasurementsReport: async ({ measurementFilter }) => {
+      const measurements = measurementService.getMeasurements(measurementFilter);
+
+      try {
+        // First upload the CSV report
+        await utils.uploadCSVReport(measurements);
+
+        // Then upload the SR report
+        // await utils.uploadSRReport(measurements, ['ArrowAnnotate'], {
+        //   SeriesDescription: 'Measurements Report',
+        // });
+
+        // Get eventidentifier from URL query parameters for the display name
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventIdentifier = urlParams.get('eventidentifier');
+
+        if (eventIdentifier) {
+          // Load the SR file with the eventidentifier as the name
+          await commandsManager.runCommand('loadMeasurements', {
+            dataSource: {
+              id: eventIdentifier,
+              type: 'sr',
+            },
+          });
+        }
+      } catch (error) {
+        console.error('Error during measurement export:', error);
+        // Show error to user
+        alert('Error exporting measurements. Please try again.');
+      }
     },
 
     downloadCSVSegmentationReport: ({ segmentationId }) => {
@@ -1933,6 +1966,9 @@ function commandsModule({
     },
     downloadCSVMeasurementsReport: {
       commandFn: actions.downloadCSVMeasurementsReport,
+    },
+    uploadCSVMeasurementsReport: {
+      commandFn: actions.uploadCSVMeasurementsReport,
     },
     setViewportWindowLevel: {
       commandFn: actions.setViewportWindowLevel,

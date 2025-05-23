@@ -24,6 +24,7 @@ import { useViewportsByPositionStore } from './stores/useViewportsByPositionStor
 import { useToggleOneUpViewportGridStore } from './stores/useToggleOneUpViewportGridStore';
 import requestDisplaySetCreationForStudy from './Panels/requestDisplaySetCreationForStudy';
 import promptSaveReport from './utils/promptSaveReport';
+import downloadSRCommand from './utils/downloadSRCommand';
 
 export type HangingProtocolParams = {
   protocolId?: string;
@@ -211,14 +212,17 @@ const commandsModule = ({
           multiMonitorService.run(screenDelta, commands, options);
         }, 1000);
       }
-    },
-
-    /** Displays a prompt and then save the report if relevant */
+    } /** Displays a prompt and then save the report if relevant */,
     promptSaveReport: props => {
       const { StudyInstanceUID } = props;
       promptSaveReport({ servicesManager, commandsManager, extensionManager }, props, {
         data: { StudyInstanceUID },
       });
+    },
+
+    /** Download an SR file or display a prompt to download one */
+    downloadSR: props => {
+      downloadSRCommand({ servicesManager, commandsManager, extensionManager }, props);
     },
 
     /**
@@ -760,6 +764,7 @@ const commandsModule = ({
   const definitions = {
     multimonitor: actions.multimonitor,
     promptSaveReport: actions.promptSaveReport,
+    downloadSR: actions.downloadSR,
     loadStudy: actions.loadStudy,
     showContextMenu: actions.showContextMenu,
     closeContextMenu: actions.closeContextMenu,

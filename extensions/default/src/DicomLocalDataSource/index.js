@@ -231,8 +231,17 @@ function createDicomLocalApi(dicomLocalConfig) {
 
       return imageId;
     },
-    deleteStudyMetadataPromise() {
-      console.log('deleteStudyMetadataPromise not implemented');
+    deleteStudyMetadataPromise(StudyInstanceUID) {
+      // Delete the study from DicomMetadataStore to ensure clean reload
+      if (StudyInstanceUID) {
+        const study = DicomMetadataStore.getStudy(StudyInstanceUID);
+        if (study) {
+          const { _studyInstanceUID } = study;
+          DicomMetadataStore._model.studies = DicomMetadataStore._model.studies.filter(
+            s => s._studyInstanceUID !== _studyInstanceUID
+          );
+        }
+      }
     },
     getStudyInstanceUIDs: ({ params, query }) => {
       const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;

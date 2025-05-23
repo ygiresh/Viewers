@@ -24,7 +24,7 @@ const PROXY_PATH_REWRITE_FROM = process.env.PROXY_PATH_REWRITE_FROM;
 const PROXY_PATH_REWRITE_TO = process.env.PROXY_PATH_REWRITE_TO;
 
 // Add port constant
-const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
+const OHIF_PORT = Number(process.env.OHIF_PORT || 3001);
 
 export default defineConfig({
   source: {
@@ -43,6 +43,7 @@ export default defineConfig({
       'process.env.LOCIZE_PROJECTID': JSON.stringify(process.env.LOCIZE_PROJECTID || ''),
       'process.env.LOCIZE_API_KEY': JSON.stringify(process.env.LOCIZE_API_KEY || ''),
       'process.env.REACT_APP_I18N_DEBUG': JSON.stringify(process.env.REACT_APP_I18N_DEBUG || ''),
+      'process.env.APP_FILE_ENDPOINT': JSON.stringify(process.env.APP_FILE_ENDPOINT || ''),
     },
   },
   plugins: [pluginReact(), pluginNodePolyfill()],

@@ -90,8 +90,62 @@ const commandsModule = (props: withAppTypes) => {
       const reportBlob = dcmjs.data.datasetToBlob(srDataset);
 
       //Create a URL for the binary.
-      const objectUrl = URL.createObjectURL(reportBlob);
-      window.location.assign(objectUrl);
+      //const objectUrl = URL.createObjectURL(reportBlob);
+      //window.location.assign(objectUrl);
+
+      //--------This is custom code to upload the SR file to the server--------
+      // Get eventidentifier from URL query parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const eventIdentifier = urlParams.get('eventidentifier');
+
+      // Access environment variable safely with multiple fallbacks
+      const FILE_ENDPOINT = 'http://localhost:55302/FileHandler.ashx';
+      const uploadUrl = eventIdentifier
+        ? `${FILE_ENDPOINT}?eventidentifier=${encodeURIComponent(eventIdentifier)}`
+        : FILE_ENDPOINT;
+
+      console.log('Using upload URL with eventidentifier:', uploadUrl);
+
+      // Create FormData and append the file
+      const formData = new FormData();
+      const datestringvalue = new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+      })
+        .format(new Date())
+        .replace(/[\/, :]/g, '_');
+
+      formData.append('file', reportBlob, `SR_Report_${eventIdentifier}_${datestringvalue}.dcm`);
+
+      // Post the data to the API endpoint
+      return fetch(uploadUrl, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Accept: 'application/json',
+        },
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('SR file uploaded successfully:', data);
+          return data;
+        })
+        .catch(error => {
+          console.error('Error uploading SR file:', error);
+          throw error;
+        });
+
+      //--------This is custom code to upload the SR file to the server--------
     },
 
     /**

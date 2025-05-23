@@ -27,6 +27,7 @@ import imageIdToURI from './imageIdToURI';
 import debounce from './debounce';
 import roundNumber from './roundNumber';
 import downloadCSVReport from './downloadCSVReport';
+import uploadCSVReport from './uploadCSVReport';
 import isEqualWithin from './isEqualWithin';
 import addAccessors from './addAccessors';
 import {
@@ -42,6 +43,7 @@ import { createStudyBrowserTabs } from './createStudyBrowserTabs';
 import { sopClassDictionary } from './sopClassDictionary';
 import * as MeasurementFilters from './measurementFilters';
 import getClosestOrientationFromIOP from './getClosestOrientationFromIOP';
+import uploadSRReport from './uploadSRReport';
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.
 
@@ -83,6 +85,8 @@ const utils = {
   debounce,
   roundNumber,
   downloadCSVReport,
+  uploadCSVReport,
+  uploadSRReport,
   splitComma,
   getSplitParam,
   generateAcceptHeader,
@@ -118,6 +122,8 @@ export {
   debounce,
   roundNumber,
   downloadCSVReport,
+  uploadCSVReport,
+  uploadSRReport,
   splitComma,
   getSplitParam,
   generateAcceptHeader,

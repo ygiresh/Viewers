@@ -1,4 +1,5 @@
 import { utils } from '@ohif/core';
+import React from 'react';
 
 import createReportAsync from '../Actions/createReportAsync';
 import { createReportDialogPrompt } from '../Panels';
@@ -14,7 +15,7 @@ const {
 } = utils.MeasurementFilters;
 
 async function promptSaveReport({ servicesManager, commandsManager, extensionManager }, ctx, evt) {
-  const { measurementService, displaySetService } = servicesManager.services;
+  const { measurementService, displaySetService, uiDialogService } = servicesManager.services;
   const viewportId = evt.viewportId === undefined ? evt.data.viewportId : evt.viewportId;
   const isBackupSave = evt.isBackupSave === undefined ? evt.data.isBackupSave : evt.isBackupSave;
   const StudyInstanceUID = evt?.data?.StudyInstanceUID || ctx.trackedStudy;
@@ -72,11 +73,55 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
           'CORNERSTONE_STRUCTURED_REPORT'
         );
       };
+
       displaySetInstanceUIDs = await createReportAsync({
         servicesManager,
         getReport,
       });
-    } else if (promptResult.action === RESPONSE.CANCEL) {
+
+      // After successful creation, ask if user wants to download the SR
+      uiDialogService.show({
+        id: 'download-sr-dialog',
+        title: 'Download Structured Report',
+        content: ({ close }) => {
+          return (
+            <div className="p-4">
+              <p className="mb-4">Would you like to download the Structured Report (SR) file?</p>
+              <div className="flex justify-end space-x-2">
+                {' '}
+                <button
+                  className="rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
+                  onClick={close}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="bg-primary-main hover:bg-primary-dark rounded px-4 py-2 text-white"
+                  onClick={() => {
+                    // Download the SR
+                    commandsManager.runCommand('downloadReport', {
+                      measurementData,
+                      additionalFindingTypes: ['ArrowAnnotate'],
+                      options: {
+                        SeriesDescription,
+                        SeriesNumber,
+                        InstanceNumber,
+                        SeriesInstanceUID: promptResult.series,
+                        SeriesDate,
+                        SeriesTime,
+                      },
+                    });
+                    close();
+                  }}
+                >
+                  Download
+                </button>
+              </div>
+            </div>
+          );
+        },
+      });
+    } else if (promptResult.action === PROMPT_RESPONSES.CANCEL) {
       // Do nothing
     }
 

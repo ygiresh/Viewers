@@ -294,6 +294,15 @@ function createDicomJSONApi(dicomJsonConfig) {
       const imageIds = getImageId({ instance, frame });
       return imageIds;
     },
+    deleteStudyMetadataPromise(StudyInstanceUID) {
+      // For dicomJSON, we don't need to delete any cached promise
+      // as we don't use promises for metadata retrieval
+      // Just log that it was called
+      console.log('DicomJSONDataSource: deleteStudyMetadataPromise called for', StudyInstanceUID);
+
+      // If you need to clean up any resources, do it here
+      // But don't try to access private properties of DicomMetadataStore
+    },
     getStudyInstanceUIDs: ({ params, query }) => {
       const url = query.get('url');
       return _store.studyInstanceUIDMap.get(url);

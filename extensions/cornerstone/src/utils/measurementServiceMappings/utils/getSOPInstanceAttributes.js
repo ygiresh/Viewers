@@ -29,9 +29,9 @@ export default function getSOPInstanceAttributes(imageId, displaySetService, ann
 
 function _getUIDFromImageID(imageId) {
   const instance = cornerstone.metaData.get('instance', imageId);
-
   return {
     SOPInstanceUID: instance.SOPInstanceUID,
+    SOPClassUID: instance.SOPClassUID,
     SeriesInstanceUID: instance.SeriesInstanceUID,
     StudyInstanceUID: instance.StudyInstanceUID,
     frameNumber: instance.frameNumber || 1,
